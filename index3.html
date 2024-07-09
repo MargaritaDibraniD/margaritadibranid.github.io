@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimum White Tiles Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative; /* To position tiles relative to the container */
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="number"],
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .tile {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ccc;
+            display: inline-block;
+        }
+        .black {
+            background-color: #000;
+        }
+        .white {
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Minimum White Tiles Calculator</h1>
+        <label for="floor">Enter the floor pattern:</label><br>
+        <input type="text" id="floor" name="floor" oninput="updateFloorPattern()" required><br>
+        <div id="floorPattern"></div>
+        
+        <label for="numCarpets">Enter the number of carpets:</label><br>
+        <input type="number" id="numCarpets" name="numCarpets" required><br>
+        
+        <label for="carpetLen">Enter the length of each carpet:</label><br>
+        <input type="number" id="carpetLen" name="carpetLen" required><br>
+        
+        <button onclick="calculateMinimumWhiteTiles()">Calculate</button>
+    
+        <div id="result"></div>
+        
+        <!-- <div id="calculatedPattern"></div> -->
+    </div>
+</body>
+<script>
+    class Solution {
+        static MinimumWhiteTiles(floor, numCarpets, carpetLen) {
+            const n = floor.length;
+            const dp = new Array(n + 1).fill(0).map(() => new Array(numCarpets + 1).fill(0));
+
+            for (let i = 1; i <= n; ++i) {
+                for (let k = 0; k <= numCarpets; ++k) {
+                    const jump = dp[i - 1][k] + parseInt(floor[i - 1]);
+                    const cover = k > 0 ? dp[Math.max(0, i - carpetLen)][k - 1] : 1000;
+                    dp[i][k] = Math.min(cover, jump);
+                }
+            }
+            return dp[n][numCarpets];
+        }
+    }
+
+    function updateFloorPattern() {
+        const floor = document.getElementById("floor").value;
+        const floorPatternContainer = document.getElementById("floorPattern");
+        floorPatternContainer.innerHTML = ''; // Clear previous content
+        
+        for (let i = 0; i < floor.length; i++) {
+            const tile = document.createElement('div');
+            tile.className = 'tile';
+            tile.classList.add(floor[i] === '0' ? 'black' : 'white');
+            floorPatternContainer.appendChild(tile);
+        }
+    }
+
+    function calculateMinimumWhiteTiles() {
+        const floor = document.getElementById("floor").value;
+        const numCarpets = parseInt(document.getElementById("numCarpets").value);
+        const carpetLen = parseInt(document.getElementById("carpetLen").value);
+
+        const minimumWhiteTiles = Solution.MinimumWhiteTiles(floor, numCarpets, carpetLen);
+
+        document.getElementById("result").innerText = `Minimum White Tiles: ${minimumWhiteTiles}`;
+        
+        // Update floor pattern after calculation
+        const floorPatternContainer = document.getElementById("calculatedPattern");
+        floorPatternContainer.innerHTML = ''; // Clear previous content
+        
+        // Determine the number of white tiles based on the result
+        const numWhiteTiles = minimumWhiteTiles;
+        const numBlackTiles = floor.match(/0/g).length;
+        
+        // Add black and white tiles based on the input pattern and result
+        let whiteTilesRemaining = numWhiteTiles;
+        for (let i = 0; i < floor.length; i++) {
+            const tile = document.createElement('div');
+            tile.className = 'tile';
+            if (floor[i] === '0') {
+                tile.classList.add('black');
+            } else {
+                if (whiteTilesRemaining > 0) {
+                    tile.classList.add('white');
+                    whiteTilesRemaining--;
+                } else {
+                    tile.classList.add('black');
+                }
+            }
+            floorPatternContainer.appendChild(tile);
+        }
+    }
+</script>
+</html>
