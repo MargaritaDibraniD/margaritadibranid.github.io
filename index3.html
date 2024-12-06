@@ -6,54 +6,120 @@
     <title>Minimum White Tiles Calculator</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
             margin: 0;
             padding: 0;
         }
+
         .container {
-            max-width: 600px;
+            display: flex;
+            flex-direction: row;
+            max-width: 1200px;
             margin: 50px auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            position: relative; /* To position tiles relative to the container */
+            /* background-color: #ffffff; */
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            overflow: hidden; /* Ensures rounded corners are respected */
         }
-        h1 {
-            text-align: center;
+
+        .left-section {
+            width: 50%;
+            padding: 30px;
+            background-color: #f4f4f4;
+            border-radius: 15px; /* Rounded corners for the left side */
+            box-sizing: border-box;
+        }
+
+        .right-section {
+            width: 50%;
+            padding: 20px;
+            background-color: #ffffff;
+            overflow-y: auto;
+            border-radius: 15px; /* Rounded corners for the right side */
+            box-sizing: border-box;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        #result {
+            /* margin-top: 20px; */
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #444;
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #result h3 {
+            margin-bottom: 20px;
             color: #333;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        #resultContent {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #444;
+            width:auto;
+            word-wrap: break-word;
+            padding: 10px;
+            background-color: #f9f9f9;
+            /* border: 1px solid #ddd; */
+            border-radius: 8px; /* Keep rounded corners for result container */
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1, h3 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #555;
+            font-size: 1rem;
         }
         label {
+            display: block;
+            margin: 20px 0 10px;
             font-weight: bold;
+            color: #444;
         }
-        input[type="text"],
-        input[type="number"],
-        button {
+        select, input[type="text"], input[type="number"], input[type="file"], button {
             width: 100%;
             padding: 10px;
-            margin-bottom: 10px;
+            margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
             box-sizing: border-box;
+            font-size: 1rem;
         }
         button {
             background-color: #4caf50;
-            color: #fff;
+            color: white;
+            font-weight: bold;
             cursor: pointer;
+            transition: all 0.3s;
         }
         button:hover {
             background-color: #45a049;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        #result {
-            margin-top: 20px;
-            font-weight: bold;
+        .hidden {
+            display: none;
+        }
+
+        #floorPattern {
+            margin-top: 10px;
         }
         .tile {
             width: 20px;
             height: 20px;
             border: 1px solid #ccc;
             display: inline-block;
+            margin: 2px;
         }
         .black {
             background-color: #000;
@@ -61,93 +127,491 @@
         .white {
             background-color: #fff;
         }
+
+        .results-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .result-card {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #333;
+            border-bottom: 2px solid #4caf50;
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .tiles-container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .tiles-container .tile-visualization {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tile-pattern {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .tile-pattern .tile {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ccc;
+            display: inline-block;
+            margin: 1px;
+            border-radius: 4px; /* Subtle round edges */
+            transition: background-color 0.2s ease;
+        }
+
+        .tile-pattern .tile.highlight {
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+            background-color: #f0fff0;
+        }
+
+        @media screen and (max-width: 768px) {
+            .tiles-container {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Minimum White Tiles Calculator</h1>
-        <label for="floor">Enter the floor pattern:</label><br>
-        <input type="text" id="floor" name="floor" oninput="updateFloorPattern()" required><br>
-        <div id="floorPattern"></div>
+        <div class="left-section">
+            <h1>Minimum White Tiles Calculator</h1>
+            <p>Select how you would like to provide your input:</p>
+            <select id="inputType" onchange="toggleInputFields()">
+                <option value="" disabled selected>Select an option</option>
+                <option value="single">Single Pattern</option>
+                <option value="file">Upload Text File</option>
+            </select>
+
+            <!-- Single Pattern Input -->
+            <div id="singlePatternInput" class="hidden">
+                <label for="floor">Enter the floor pattern:</label>
+                <input type="text" id="floor" name="floor" oninput="updateFloorPattern()" required>
+                <div id="floorPattern"></div>
+            </div>
+
+            <!-- File Input -->
+            <div id="fileInputContainer" class="hidden">
+                <label for="fileInput">Upload a text file with floor patterns:</label>
+                <input type="file" id="fileInput" accept=".txt">
+            </div>
+
+            <!-- Common Inputs -->
+            <label for="numCarpets">Enter the number of carpets:</label>
+            <input type="number" id="numCarpets" name="numCarpets" required>
+
+            <label for="carpetLen">Enter the length of each carpet:</label>
+            <input type="number" id="carpetLen" name="carpetLen" required>
+
+            <button onclick="processInput()">Calculate</button>
+
+        </div>
+        <div class="right-section" id="result">
+            <h3>Results:</h3>
+            <!-- <div id="resultContent"> -->
+            <!-- Section for "Our Solution" -->
+            <div id="ourSolutionResult" class="result-section">
+                <h4>Our Solution</h4>
+                <div id="ourSolutionContent"></div>
+            </div>
         
+            <hr>
         
-        <label for="numCarpets">Enter the number of carpets:</label><br>
-        <input type="number" id="numCarpets" name="numCarpets" required><br>
+            <!-- Sections for "LeetCode 1" and "LeetCode 2" -->
+            <div id="leetcodeResults" class="result-section">
+                <div>
+                    <h4>LeetCode 1</h4>
+                    <div id="leetCode1Content"></div>
+                </div>
         
-        <label for="carpetLen">Enter the length of each carpet:</label><br>
-        <input type="number" id="carpetLen" name="carpetLen" required><br>
+                <hr>
         
-        <button onclick="calculateMinimumWhiteTiles()">Calculate</button>
-    
-        <div id="result"></div>
-        
-        <!-- <div id="calculatedPattern"></div> -->
+                <div>
+                    <h4>LeetCode 2</h4>
+                    <div id="leetCode2Content"></div>
+                </div>
+            </div>
+        </div>
+        </div>
     </div>
-</body>
-<script>
-    class Solution {
-        static MinimumWhiteTiles(floor, numCarpets, carpetLen) {
-            const n = floor.length;
-            const dp = new Array(n + 1).fill(0).map(() => new Array(numCarpets + 1).fill(0));
 
-            for (let i = 1; i <= n; ++i) {
-                for (let k = 0; k <= numCarpets; ++k) {
-                    const jump = dp[i - 1][k] + parseInt(floor[i - 1]);
-                    const cover = k > 0 ? dp[Math.max(0, i - carpetLen)][k - 1] : 1000;
-                    dp[i][k] = Math.min(cover, jump);
+    <script>
+        class Solution {
+            static MinimumWhiteTiles(floor, numCarpets, carpetLen) {
+                const n = floor.length;
+                const dp = new Array(n + 1).fill(0).map(() => new Array(numCarpets + 1).fill(Infinity));
+                const coverChoice = new Array(n + 1).fill(null).map(() => new Array(numCarpets + 1).fill(false)); // Tracks choices
+                
+                dp[0][0] = 0; // Base case
+
+                for (let i = 1; i <= n; ++i) {
+                    for (let k = 0; k <= numCarpets; ++k) {
+                        const jump = dp[i - 1][k] + parseInt(floor[i - 1]); // Without using a carpet
+                        dp[i][k] = jump;
+
+                        if (k > 0) {
+                            const start = Math.max(0, i - carpetLen);
+                            const cover = dp[start][k - 1]; // Using a carpet
+                            if (cover < dp[i][k]) {
+                                dp[i][k] = cover;
+                                coverChoice[i][k] = true; // Mark carpet use
+                            }
+                        }
+                    }
                 }
+
+                // Backtrack to find affected tiles
+                const affectedTiles = new Set();
+                let i = n, k = numCarpets;
+                while (i > 0 && k >= 0) {
+                    if (coverChoice[i][k]) {
+                        const start = Math.max(0, i - carpetLen);
+                        for (let j = start; j < i; ++j) {
+                            affectedTiles.add(j);
+                        }
+                        i = start;
+                        k -= 1; // Used one carpet
+                    } else {
+                        i -= 1; // Move to the previous tile
+                    }
+                }
+
+                return { result: dp[n][numCarpets], affectedTiles: Array.from(affectedTiles) };
             }
-            return dp[n][numCarpets];
         }
-    }
 
-    function updateFloorPattern() {
-        const floor = document.getElementById("floor").value;
-        const floorPatternContainer = document.getElementById("floorPattern");
-        floorPatternContainer.innerHTML = ''; // Clear previous content
-        
-        for (let i = 0; i < floor.length; i++) {
-            const tile = document.createElement('div');
-            tile.className = 'tile';
-            tile.classList.add(floor[i] === '0' ? 'black' : 'white');
-            floorPatternContainer.appendChild(tile);
+
+        function toggleInputFields() {
+            const inputType = document.getElementById("inputType").value;
+
+            // Hide both sections initially
+            document.getElementById("singlePatternInput").classList.add("hidden");
+            document.getElementById("fileInputContainer").classList.add("hidden");
+
+            // Show the relevant input section
+            if (inputType === "single") {
+                document.getElementById("singlePatternInput").classList.remove("hidden");
+            } else if (inputType === "file") {
+                document.getElementById("fileInputContainer").classList.remove("hidden");
+            }
+
+            // Clear previous results
+            document.getElementById("result").classList.add("hidden");
+            // document.getElementById("resultContent").innerHTML = '';
         }
-    }
 
-    function calculateMinimumWhiteTiles() {
-        const floor = document.getElementById("floor").value;
-        const numCarpets = parseInt(document.getElementById("numCarpets").value);
-        const carpetLen = parseInt(document.getElementById("carpetLen").value);
+        function updateFloorPattern() {
+            const floorInput = document.getElementById("floor");
+            const floorPatternContainer = document.getElementById("floorPattern");
 
-        const minimumWhiteTiles = Solution.MinimumWhiteTiles(floor, numCarpets, carpetLen);
+            floorInput.value = floorInput.value.replace(/[^01]/g, '');
 
-        document.getElementById("result").innerText = `Minimum White Tiles: ${minimumWhiteTiles}`;
-        
-        // Update floor pattern after calculation
-        const floorPatternContainer = document.getElementById("calculatedPattern");
-        floorPatternContainer.innerHTML = ''; // Clear previous content
-        
-        // Determine the number of white tiles based on the result
-        const numWhiteTiles = minimumWhiteTiles;
-        const numBlackTiles = floor.match(/0/g).length;
-        
-        // Add black and white tiles based on the input pattern and result
-        let whiteTilesRemaining = numWhiteTiles;
-        for (let i = 0; i < floor.length; i++) {
-            const tile = document.createElement('div');
-            tile.className = 'tile';
-            if (floor[i] === '0') {
-                tile.classList.add('black');
+            floorPatternContainer.innerHTML = '';
+            for (let i = 0; i < floorInput.value.length; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'tile';
+                tile.classList.add(floorInput.value[i] === '0' ? 'black' : 'white');
+                floorPatternContainer.appendChild(tile);
+            }
+        }
+
+        function processInput() {
+            const inputType = document.getElementById("inputType").value;
+            const numCarpets = parseInt(document.getElementById("numCarpets").value);
+            const carpetLen = parseInt(document.getElementById("carpetLen").value);
+
+            const ourSolutionContainer = document.getElementById("ourSolutionContent");
+            const leetCode1Container = document.getElementById("leetCode1Content");
+            const leetCode2Container = document.getElementById("leetCode2Content");
+
+            // Clear previous results
+            ourSolutionContainer.innerHTML = '';
+            leetCode1Container.innerHTML = '';
+            leetCode2Container.innerHTML = '';
+
+            document.getElementById("result").classList.remove("hidden");
+
+            if (inputType === "single") {
+                const floor = document.getElementById("floor").value;
+                if (!floor) {
+                    alert("Please enter a floor pattern.");
+                    return;
+                }
+
+                calculateAndVisualize(floor, numCarpets, carpetLen, ourSolutionContainer, leetCode1Container, leetCode2Container);
             } else {
-                if (whiteTilesRemaining > 0) {
-                    tile.classList.add('white');
-                    whiteTilesRemaining--;
-                } else {
-                    tile.classList.add('black');
+                const fileInput = document.getElementById("fileInput");
+
+                if (!fileInput.files.length) {
+                    alert("Please upload a file.");
+                    return;
                 }
+
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function () {
+                    const lines = reader.result.split(/\r?\n/).filter(line => line.trim() !== "");
+                    lines.forEach((floor, index) => {
+                        const resultContainer = document.createElement('div');
+                        resultContainer.style.marginBottom = '20px';
+                        resultContainer.innerHTML = `<h4>Pattern ${index + 1}: ${floor}</h4>`;
+
+                        // Append results for this floor pattern
+                        const lc1Container = document.createElement('div');
+                        const lc2Container = document.createElement('div');
+
+                        ourSolutionContainer.appendChild(resultContainer);
+                        leetCode1Container.appendChild(lc1Container);
+                        leetCode2Container.appendChild(lc2Container);
+
+                        calculateAndVisualize(
+                            floor,
+                            numCarpets,
+                            carpetLen,
+                            resultContainer,
+                            lc1Container,
+                            lc2Container
+                        );
+                    });
+                };
+
+                reader.onerror = function () {
+                    alert("Error reading file.");
+                };
+
+                reader.readAsText(file);
             }
-            floorPatternContainer.appendChild(tile);
         }
-    }
-</script>
+
+
+        function visualizeFloorPattern(floor, numCarpets, carpetLen, container) {
+            const { result, affectedTiles } = Solution.MinimumWhiteTiles(floor, numCarpets, carpetLen);
+
+            const resultText = document.createElement("span");
+            resultText.innerHTML = `Minimum White Tiles: ${result}`;
+            resultText.style.marginRight = "20px";
+            container.appendChild(resultText);
+
+            const floorVisualization = document.createElement("div");
+            floorVisualization.style.display = "flex";
+
+            for (let i = 0; i < floor.length; i++) {
+                const tile = document.createElement("div");
+                tile.className = "tile";
+                tile.classList.add(floor[i] === "0" ? "black" : "white");
+
+                // Highlight affected tiles with border
+                if (affectedTiles.includes(i)) {
+                    tile.style.border = "2px solid red";
+                    tile.style.backgroundColor = "black";
+                }
+
+                floorVisualization.appendChild(tile);
+            }
+
+            container.appendChild(floorVisualization);
+        }
+
+        class LeetCode1 {
+            static MinimumWhiteTiles(s, nc, l) {
+                const mem = Array.from({ length: s.length + 1 }, () => Array(nc + 1).fill(-1));
+                const track = Array.from({ length: s.length + 1 }, () => Array(nc + 1).fill(false));
+
+                function dp(pos, t) {
+                    if (t < 0) return Number.MAX_SAFE_INTEGER; // Mimics `INT_MAX`
+                    if (pos < 0) return 0;
+                    if (mem[pos][t] !== -1) return mem[pos][t];
+
+                    const skip = dp(pos - l, t - 1); // Cover tiles with a carpet
+                    const jump = dp(pos - 1, t) + parseInt(s[pos]); // Leave the current tile uncovered
+
+                    if (skip <= jump) {
+                        track[pos][t] = true; // Mark this position as covered by a carpet
+                    }
+
+                    return (mem[pos][t] = Math.min(skip, jump));
+                }
+
+                const result = dp(s.length - 1, nc);
+
+                // Backtrack to find affected tiles
+                const affectedTiles = [];
+                let pos = s.length - 1, t = nc;
+                while (pos >= 0 && t >= 0) {
+                    if (track[pos][t]) {
+                        for (let i = Math.max(0, pos - l + 1); i <= pos; i++) {
+                            affectedTiles.push(i);
+                        }
+                        pos -= l;
+                        t--;
+                    } else {
+                        pos--;
+                    }
+                }
+
+                return { result, affectedTiles };
+            }
+        }
+
+        class LeetCode2 {
+            static MinimumWhiteTiles(floor, numCarpets, len) {
+                const sz = floor.length;
+
+                // Initialize a 2D DP array with dimensions [2][sz + 1], initialized to 0
+                const dp = Array.from({ length: 2 }, () => Array(sz + 1).fill(0));
+                const track = Array.from({ length: numCarpets + 1 }, () => Array(sz).fill(false));
+
+                // Fill the base case (no carpets used)
+                for (let i = 0; i < sz; ++i) {
+                    dp[0][i + 1] = dp[0][i] + (floor[i] === '1' ? 1 : 0);
+                }
+
+                // Iterate over the number of carpets
+                for (let c = 1; c <= numCarpets; ++c) {
+                    for (let i = 0; i < sz; ++i) {
+                        const leaveUncovered = dp[c % 2][i] + (floor[i] === '1' ? 1 : 0);
+                        const useCarpet = dp[(c + 1) % 2][Math.max(0, i + 1 - len)];
+                        if (useCarpet <= leaveUncovered) {
+                            track[c][i] = true; // Mark this position as covered by a carpet
+                        }
+                        dp[c % 2][i + 1] = Math.min(leaveUncovered, useCarpet);
+                    }
+                }
+
+                // Backtrack to find affected tiles
+                const affectedTiles = [];
+                let i = sz - 1, c = numCarpets;
+                while (i >= 0 && c > 0) {
+                    if (track[c][i]) {
+                        for (let j = Math.max(0, i - len + 1); j <= i; j++) {
+                            affectedTiles.push(j);
+                        }
+                        i -= len;
+                        c--;
+                    } else {
+                        i--;
+                    }
+                }
+
+                return { result: dp[numCarpets % 2][sz], affectedTiles };
+            }
+        }
+
+
+        function visualizeResult(floor, result, container) {
+            const { result: minWhiteTiles, affectedTiles } = result;
+
+            // Create the result string
+            let resultString = `Minimum White Tiles = ${minWhiteTiles}`;
+
+            // Visualization containers
+            const initialVisualization = document.createElement('div');
+            initialVisualization.style.display = 'inline-block';
+            initialVisualization.style.marginRight = '20px';
+            initialVisualization.innerHTML = `<strong>Initial:</strong><br>`;
+
+            const modifiedVisualization = document.createElement('div');
+            modifiedVisualization.style.display = 'inline-block';
+            modifiedVisualization.innerHTML = `<strong>Modified:</strong><br>`;
+
+            // Visualize the initial and modified tiles
+            for (let i = 0; i < floor.length; i++) {
+                // Initial tiles
+                const initialTile = document.createElement('span');
+                initialTile.style.display = 'inline-block';
+                initialTile.style.width = '20px';
+                initialTile.style.height = '20px';
+                initialTile.style.margin = '2px';
+                initialTile.style.border = '1px solid #ccc';
+                initialTile.style.backgroundColor = floor[i] === '1' ? '#fff' : '#000';
+                initialVisualization.appendChild(initialTile);
+
+                // Modified tiles
+                const modifiedTile = document.createElement('span');
+                modifiedTile.style.display = 'inline-block';
+                modifiedTile.style.width = '20px';
+                modifiedTile.style.height = '20px';
+                modifiedTile.style.margin = '2px';
+                modifiedTile.style.border = '1px solid #ccc';
+                modifiedTile.style.backgroundColor = affectedTiles.includes(i) ? 'yellow' : floor[i] === '1' ? '#fff' : '#000';
+                modifiedVisualization.appendChild(modifiedTile);
+            }
+
+            // Append the result string and both visualizations
+            container.innerHTML = resultString;
+            const visualizationContainer = document.createElement('div');
+            visualizationContainer.style.display = 'flex';
+            visualizationContainer.style.gap = '20px';
+            visualizationContainer.appendChild(initialVisualization);
+            visualizationContainer.appendChild(modifiedVisualization);
+            container.appendChild(visualizationContainer);
+        }
+
+
+
+        function generateTileVisualization(floor, affectedTiles) {
+            const visualizationContainer = document.createElement('div');
+            visualizationContainer.style.display = 'inline-block';
+
+            for (let i = 0; i < floor.length; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'tile';
+                tile.classList.add(floor[i] === '0' ? 'black' : 'white');
+
+                // Highlight affected tiles
+                if (affectedTiles.includes(i)) {
+                    tile.style.border = '2px solid red';
+                    tile.style.backgroundColor = "black";
+                }
+
+                visualizationContainer.appendChild(tile);
+            }
+
+            return visualizationContainer;
+        }
+
+        function calculateAndVisualize(floor, numCarpets, carpetLen, ourContainer, lc1Container, lc2Container) {
+            // "Our Solution"
+            const ourResult = Solution.MinimumWhiteTiles(floor, numCarpets, carpetLen);
+            visualizeResult(floor, ourResult, ourContainer);
+
+            // "LeetCode 1"
+            const lc1Result = LeetCode1.MinimumWhiteTiles(floor, numCarpets, carpetLen);
+            visualizeResult(floor, lc1Result, lc1Container);
+
+            // "LeetCode 2"
+            const lc2Result = LeetCode2.MinimumWhiteTiles(floor, numCarpets, carpetLen);
+            visualizeResult(floor, lc2Result, lc2Container);
+        }
+
+    </script>
+</body>
 </html>
