@@ -133,6 +133,64 @@
             align-items: flex-start;
             flex-wrap: wrap;
         }
+        .legend-container {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-size: 0.9rem;
+}
+
+/* Align the legend within the right container */
+#legend {
+    position: relative;
+    bottom: 0;
+    width: auto;
+}
+
+/* Legend heading style */
+.legend-container h3 {
+    margin-top: 0;
+    font-size: 1rem;
+    color: #444;
+}
+
+/* Legend list styling */
+.legend-container ul {
+    list-style: none;
+    padding: 0;
+}
+
+.legend-container li {
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    color: #555;
+}
+
+/* Tile styles in legend */
+.legend-tile {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.legend-tile.black {
+    background-color: #000;
+}
+
+.legend-tile.white {
+    background-color: #fff;
+}
+
+.legend-tile.yellow {
+    background-color: yellow;
+}
         @media screen and (max-width: 768px) {
             .tiles-container {
                 flex-direction: column;
@@ -173,9 +231,9 @@
 
             <label for="algorithm">Choose Algorithm:</label>
             <select id="algorithm">
-                <option value="ourSolution">Our Solution</option>
-                <option value="leetCode1">LeetCode 1</option>
-                <option value="leetCode2">LeetCode 2</option>
+                <option value="ourSolution">Optimized Iterative Tile Covering</option>
+                <option value="leetCode1">Recursive Carpet Placement with Memoization</option>
+                <option value="leetCode2">Dynamic Programming with Rolling Arrays</option>
             </select>
 
             <button onclick="processInput()">Calculate</button>
@@ -184,6 +242,14 @@
         <div class="right-section" id="result">
             <h3>Results:</h3>
             <div id="solution"></div>
+            <div id="legend" class="legend-container hidden">
+                <h3>Tile Color Legend</h3>
+                <ul>
+                    <li><span class="legend-tile black"></span> Black: Black tiles.</li>
+                    <li><span class="legend-tile white"></span> White: White tiles.</li>
+                    <li><span class="legend-tile yellow"></span> Yellow: Tiles that have been covered by the chosen algorithm.</li>
+                </ul>
+            </div>
         </div>
         </div>
     </div>
@@ -229,6 +295,7 @@
             const algorithm = document.getElementById("algorithm").value;
 
             const solutionContainer = document.getElementById("solution");
+            document.getElementById("legend").classList.remove("hidden");
 
             // Clear previous results
             solutionContainer.innerHTML = '';
